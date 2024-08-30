@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previsão do Tempo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4682b4;
+            color: white;
+            padding: 1em 0;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            padding: 2em 0;
+        }
+        .weather-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 1em;
+            max-width: 400px;
+            margin: auto;
+        }
+        input[type="text"] {
+            padding: 0.5em;
+            margin: 1em 0;
+            width: 80%;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 0.5em 1em;
+            background-color: #4682b4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4169e1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Previsão do Tempo</h1>
+    </header>
+    <div class="container">
+        <div class="weather-card">
+            <h2>Previsão Atual</h2>
+            <input type="text" id="city" placeholder="Digite o nome da cidade" />
+            <button onclick="getWeather()">Buscar</button>
+            <div id="weather-info">
+                <!-- Informações do tempo serão exibidas aqui -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value;
+            if (!city) {
+                alert('Por favor, digite o nome da cidade.');
+                return;
+            }
+
+            // Substitua 'YOUR_API_KEY' pela sua chave de API do OpenWeatherMap
+            const apiKey = 'YOUR_API_KEY';
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=pt_br`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if (data.cod === '404') {
+                    document.getElementById('weather-info').innerHTML = `<p>Cidade não encontrada.</p>`;
+                    return;
+                }
+
+                const weather = data.weather[0].description;
+                const temp = data.main.temp;
+                const humidity = data.main.humidity;
+                const windSpeed = data.wind.speed;
+
+                document.getElementById('weather-info').innerHTML = `
+                    <h3>${data.name}</h3>
+                    <p>${weather}</p>
+                    <p>Temperatura: ${temp}°C</p>
+                    <p>Umidade: ${humidity}%</p>
+                    <p>Velocidade do Vento: ${windSpeed} m/s</p>
+                `;
+            } catch (error) {
+                document.getElementById('weather-info').innerHTML = `<p>Erro ao buscar a previsão do tempo.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
